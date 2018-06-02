@@ -113,6 +113,7 @@ extern int fastapp_entry(int argc, char *argv[]);
 
 extern int reserve_mem_init(void);
 extern int show_reserve_mem(void);
+extern void init_reg2(void);
 /*
  * Phy address should pass to kernel, even if u-boot is not support net driver
  * The value priority: (The left side config will replace the right side config)
@@ -236,12 +237,43 @@ static void show_boot_env(void)
 #endif /* CONFIG_GENERIC_SF */
 }
 
+static void bootargs_prepare(void)
+{
+	char *bootargs;
+
+#ifdef CONFIG_BOOTARGS_512M
+	bootargs = getenv("bootargs_512M");
+	if (!bootargs) {
+		setenv("bootargs_512M", CONFIG_BOOTARGS_512M);
+	}
+#endif /* CONFIG_BOOTARGS_512M */
+
+#ifdef CONFIG_BOOTARGS_1G
+	bootargs = getenv("bootargs_1G");
+	if (!bootargs) {
+		setenv("bootargs_1G", CONFIG_BOOTARGS_1G);
+	}
+#endif /* CONFIG_BOOTARGS_1G */
+
+#ifdef CONFIG_BOOTARGS_2G
+	bootargs = getenv("bootargs_2G");
+	if (!bootargs) {
+		setenv("bootargs_2G", CONFIG_BOOTARGS_2G);
+	}
+#endif /* CONFIG_BOOTARGS_2G */
+}
+
 void start_armboot (void)
 {
 	init_fnc_t **init_fnc_ptr;
 	char *s;
 #if defined(CONFIG_VFD) || defined(CONFIG_LCD)
 	unsigned long addr;
+#endif
+
+#ifdef CONFIG_ARCH_S5
+	/* Initilize reg2 */
+	init_reg2();
 #endif
 
 	/* Pointer is writable since we allocated a register for it */
@@ -445,6 +477,8 @@ extern void davinci_eth_set_mac_addr (const u_int8_t *addr);
 #ifdef CONFIG_DDR_TRAINING
 	check_ddr_training();
 #endif /* CONFIG_DDR_TRAINING */
+
+	bootargs_prepare();
 
 	printf("\n");
 

@@ -43,6 +43,15 @@ unsigned int get_ddr_size(void)
 			ddr_size = (unsigned int)(memskip - membase);
 			break;
 		}
+
+		if (_HI3798CV100A == get_chipid()
+			|| _HI3798CV100 == get_chipid()
+			|| _HI3796CV100 == get_chipid()) {
+			if ((unsigned int)(memskip - membase) >= (SZ_2G - SZ_16M)) {
+				ddr_size = SZ_2G;
+				break;
+			}
+		}
 	}
 
 	/* restore membase value. */

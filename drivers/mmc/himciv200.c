@@ -14,7 +14,7 @@
 #  include "himciv200_godbox.c"
 #endif
 
-#ifdef CONFIG_ARCH_S40
+#if defined(CONFIG_ARCH_S40) || defined(CONFIG_ARCH_S5) || defined(CONFIG_ARCH_HI3798MX)
 #  include "himciv200_s40.c"
 #endif
 
@@ -403,13 +403,15 @@ static int hi_mci_cmd_done(struct himci_host *host, unsigned int stat)
 			HIMCI_DEBUG_INFO("CMD Response of card is %08x",
 					 cmd->response[0]);
 		}
-		if ((cmd->resp_type == MMC_RSP_R1)
-		    || (cmd->resp_type == MMC_RSP_R1b)) {
-			if (cmd->response[0] & MMC_CS_ERROR_MASK) {
-				HIMCI_DEBUG_ERR("Card status stat = 0x%x"
+		if (host->mmc.version && !IS_SD((&host->mmc))) {
+			if ((cmd->resp_type == MMC_RSP_R1)
+				|| (cmd->resp_type == MMC_RSP_R1b)) {
+				if (cmd->response[0] & MMC_CS_ERROR_MASK) {
+					HIMCI_DEBUG_ERR("Card status stat = 0x%x"
 						" is card error!",
 						cmd->response[0]);
-				return -1;
+					return -1;
+				}
 			}
 		}
 	}
@@ -669,7 +671,7 @@ static int hi_mci_initialize(bd_t * bis)
 
 	/* check controller version. */
 	regval = himci_readl(REG_BASE_MCI + MCI_VERID);
-	if (regval != MCI_VERID_VALUE) {
+	if ((regval != MCI_VERID_VALUE) && (regval != MCI_VERID_VALUE2)) {
 		printf("MMC/SD controller version incorrect.\n");
 		return -ENODEV;
 	}
@@ -739,7 +741,7 @@ void check_ext_csd(struct mmc *mmc)
 	else
 		boot_bus_width = 0x1; /* 4bits */
 
-#ifdef CONFIG_ARCH_S40
+#if defined(CONFIG_ARCH_S40) ||defined(CONFIG_ARCH_S5) || defined(CONFIG_ARCH_HI3798MX)
 
 	/*
 	 * only s40 Architecture support reset pin
@@ -999,7 +1001,9 @@ int mmc_flash_init(void)
 
 	print_mmcinfo(mmc);
 
-	check_ext_csd(mmc);
+	if (!IS_SD(mmc)) {
+		check_ext_csd(mmc);
+	}
 
 	return 0;
 }

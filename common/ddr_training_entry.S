@@ -33,3 +33,13 @@ s40_ddr_training_data_start:
 .globl s40_ddr_training_data_end
 s40_ddr_training_data_end:
 #endif /* CONFIG_DDR_TRAINING_S40 */
+
+#ifdef CONFIG_DDR_TRAINING_S5
+.globl s5_ddr_training_data_start
+s5_ddr_training_data_start:
+.incbin "../arch/arm/cpu/s5/ddr_training/s5/ddr_training.bin"
+.globl s5_ddr_training_data_end
+s5_ddr_training_data_end:
+#endif /* CONFIG_DDR_TRAINING_S5 */
+
+

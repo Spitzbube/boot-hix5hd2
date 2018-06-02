@@ -198,6 +198,7 @@ COBJS-$(CONFIG_DDR_TRAINING_HI3716MV300) += hi3716mv300_ddr_training_printf.o
 COBJS-$(CONFIG_DDR_TRAINING_HI3716CV100) += hi3716cv100_ddr_training_printf.o
 COBJS-$(CONFIG_DDR_TRAINING_HI3712V100)  += hi3712v100_ddr_training_printf.o
 COBJS-$(CONFIG_DDR_TRAINING_S40)  += s40_ddr_training_printf.o
+COBJS-$(CONFIG_DDR_TRAINING_S5) += s5_ddr_training_printf.o
 AOBJS-$(CONFIG_DDR_TRAINING) += ddr_training_entry.o
 AOBJS-$(CONFIG_MERGE_IMAGE_SUPPORT)  += merge_image.o
 

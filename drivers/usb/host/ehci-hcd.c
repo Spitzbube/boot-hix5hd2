@@ -33,7 +33,7 @@
 #  include "hiusb-godbox.c"
 #endif
 
-#ifdef CONFIG_ARCH_S40
+#if defined(CONFIG_ARCH_S40) || defined(CONFIG_ARCH_S5)
 #  include "hiusb-s40.c"
 #endif
 

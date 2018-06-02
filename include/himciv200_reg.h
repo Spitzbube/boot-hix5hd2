@@ -177,8 +177,10 @@
 
 #if defined(CONFIG_HIMCI_V100)
 #  define MCI_VERID_VALUE                                   0x5342210A
+#  define MCI_VERID_VALUE2                                  0x5342210A  /* avoid compile error */
 #elif defined(CONFIG_HIMCI_V200)
 #  define MCI_VERID_VALUE                                   0x5342250A
+#  define MCI_VERID_VALUE2                                  0x5342270A
 #endif
 /* MCI_IDINTEN(0x90) details */
 #define MCI_IDINTEN_MASK (0x00000337)

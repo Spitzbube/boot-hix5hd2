@@ -17,7 +17,11 @@ void higmac_set_macif(struct higmac_netdev_local *ld, int mode, int speed)
 
 	/* soft reset mac_if */
 	v = readl(p + RESET_CTRL);
-	v |= 1 << (ld->index + 10);/* bit10 mac_if0 */
+	if (_HI3798CV100A == get_chipid() || _HI3798CV100 == get_chipid()
+		|| _HI3796CV100 == get_chipid()) {
+		v |= 1 << (ld->index + 14);/* bit10 mac_if0 */
+	} else 
+		v |= 1 << (ld->index + 10);/* bit10 mac_if0 */
 	writel(v, p + RESET_CTRL);
 
 	/* config mac_if */
@@ -27,7 +31,11 @@ void higmac_set_macif(struct higmac_netdev_local *ld, int mode, int speed)
 		writel(mode, HIGMAC_MACIF0_CTRL);
 
 	v = readl(p + RESET_CTRL);
-	v &= ~(1 << (ld->index + 10));/* undo reset */
+	if (_HI3798CV100A == get_chipid() || _HI3798CV100 == get_chipid()
+		|| _HI3796CV100 == get_chipid()) 
+		v &= ~(1 << (ld->index + 14));/* undo reset */
+	else
+		v &= ~(1 << (ld->index + 10));/* undo reset */
 	writel(v, p + RESET_CTRL);
 }
 
@@ -105,13 +113,21 @@ void higmac_sys_init(void)
 	p = (unsigned long)(HIGMAC_SYS_CTL_IO_BASE);
 
 	v = readl(p + RESET_CTRL);
-	v |= 0x0f3f;//reset g1, g0, mac_if1, mac_if0
+	if (_HI3798CV100A == get_chipid() || _HI3798CV100 == get_chipid()
+		|| _HI3796CV100 == get_chipid()) 
+		v |= 0x0f3ff;//reset g1, g0, mac_if1, mac_if0
+	else
+		v |= 0x0f3f;//reset g1, g0, mac_if1, mac_if0
 	writel(v, p + RESET_CTRL);
 
 	udelay(10);
 
 	v = readl(p + RESET_CTRL);
-	v = 0x3f;//undo reset
+	if (_HI3798CV100A == get_chipid() || _HI3798CV100 == get_chipid()
+		|| _HI3796CV100 == get_chipid()) 
+		v &= ~(0xf << 12);//undo reset
+	else
+		v = 0x3f;//undo reset
 	writel(v, p + RESET_CTRL);
 #ifndef CONFIG_S40_FPGA
 	writel(0, INTERNAL_FEPHY_CTRL);

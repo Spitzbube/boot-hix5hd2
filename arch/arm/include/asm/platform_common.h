@@ -40,6 +40,17 @@
 #define _HI3719M_MASK                 (0xFFFFFFFFFFLL)
 #define _HI3718M_MASK                 (0xFEFFFFFFFFLL)
 
+#define _HI3798CV100A                 (0x0019050100LL)
+#define _HI3798CV100                  (0x1C19050100LL)
+#define _HI3796CV100                  (0x1819050100LL)
+#define _HI3798CV100A_MASK            (0xFFFFFFFFFFLL)
+
+#define _HI3798M_V100_A               (0x0019400300LL)
+#define _HI3798M_V100_A_MASK          (0xF0FFFFFFFFLL)
+
+#define _HI3798M_V100                 (0x0037980100LL)
+#define _HI3798M_V100_MASK            (0xF0FFFFFFFFLL)
+
 #define _HI3712_V100                  (0x0037120100LL)
 #define _HI3712_MASK                  (0x00FFFFFFFFLL)
 #define _HI3712_V100A      (0)
@@ -67,6 +78,12 @@
 #define DEV_HISFC300       0x200
 #define DEV_HISFC350       0x300
 #define DEV_HISFC_MASK     0xF00
+
+/* bootstrap type */
+#define SELF_BOOT_TYPE_NONE           (0)  /* boot type: NONE SELF BOOT */
+#define SELF_BOOT_TYPE_UART           (1)  /* boot type: UART */
+#define SELF_BOOT_TYPE_USBDEV         (2)  /* boot type: USBDEV */
+#define SELF_BOOT_TYPE_USBHOST        (3)  /* boot type: USBHOST */
 
 /******************************************************************************/
 #endif /* PLATFORM_COMMONH */

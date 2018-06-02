@@ -12,28 +12,40 @@
 #include <ddr_training_common.h>
 
 #ifdef CONFIG_DDR_TRAINING_HI3716MV300
-extern int  hi3716mv300_ddr_training_result(unsigned int TRAINING_ADDR);
+extern int  hi3716mv300_ddr_training_result(unsigned int result_addr);
 extern char hi3716mv300_ddr_training_data_start[];
 extern char hi3716mv300_ddr_training_data_end[];
 #endif /* CONFIG_DDR_TRAINING_HI3716MV300 */
 
 #ifdef CONFIG_DDR_TRAINING_HI3716CV100
-extern int  hi3716cv100_ddr_training_result(unsigned int TRAINING_ADDR);
+extern int  hi3716cv100_ddr_training_result(unsigned int result_addr);
 extern char hi3716cv100_ddr_training_data_start[];
 extern char hi3716cv100_ddr_training_data_end[];
 #endif /* CONFIG_DDR_TRAINING_HI3716CV100 */
 
 #ifdef CONFIG_DDR_TRAINING_HI3712V100
-extern int  hi3712v100_ddr_training_result(unsigned int TRAINING_ADDR);
+extern int  hi3712v100_ddr_training_result(unsigned int result_addr);
 extern char hi3712v100_ddr_training_data_start[];
 extern char hi3712v100_ddr_training_data_end[];
 #endif /* CONFIG_DDR_TRAINING_HI3712V100 */
 
 #ifdef CONFIG_DDR_TRAINING_S40
-extern int  s40_ddr_training_result(unsigned int TRAINING_ADDR);
+extern int  s40_ddr_training_result(unsigned int result_addr);
 extern char s40_ddr_training_data_start[];
 extern char s40_ddr_training_data_end[];
 #endif /* CONFIG_DDR_TRAINING_S40 */
+
+#ifdef CONFIG_DDR_TRAINING_HI3798MX
+extern int  hi3798mx_ddr_training_result(unsigned int result_addr);
+extern char hi3798mx_ddr_training_data_start[];
+extern char hi3798mx_ddr_training_data_end[];
+#endif /* CONFIG_DDR_TRAINING_HI3798MX */
+
+#ifdef CONFIG_DDR_TRAINING_S5
+extern int  s5_ddr_training_result(unsigned int result_addr);
+extern char s5_ddr_training_data_start[];
+extern char s5_ddr_training_data_end[];
+#endif /* CONFIG_DDR_TRAINING_S5 */
 
 #define DDR_TRAINING_ENV                       "ddrtr"
 
@@ -42,29 +54,36 @@ extern int do_saveenv (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[]);
 
 /*****************************************************************************/
 
-static int ddr_training_result(unsigned int TRAINING_ADDR)
+static int ddr_training_result(unsigned int result_addr)
 {
 	long long chipid = get_chipid();
 
 #ifdef CONFIG_DDR_TRAINING_HI3716MV300
 	if (chipid == _HI3716M_V300)
-		return hi3716mv300_ddr_training_result(TRAINING_ADDR);
+		return hi3716mv300_ddr_training_result(result_addr);
 #endif
 
 #ifdef CONFIG_DDR_TRAINING_HI3716CV100
 	if (chipid == _HI3716C_V100)
-		return hi3716cv100_ddr_training_result(TRAINING_ADDR);
+		return hi3716cv100_ddr_training_result(result_addr);
 #endif
 
 #ifdef CONFIG_DDR_TRAINING_HI3712V100
 	if (chipid == _HI3712_V100)
-		return hi3712v100_ddr_training_result(TRAINING_ADDR);
+		return hi3712v100_ddr_training_result(result_addr);
 #endif
 
 #ifdef CONFIG_DDR_TRAINING_S40
-	return s40_ddr_training_result(TRAINING_ADDR);
+	return s40_ddr_training_result(result_addr);
 #endif
 
+#ifdef CONFIG_DDR_TRAINING_HI3798MX
+	return hi3798mx_ddr_training_result(result_addr);
+#endif
+
+#ifdef CONFIG_DDR_TRAINING_S5
+	return s5_ddr_training_result(result_addr);
+#endif
 	printf("DDR training is unsupport.\n");
 
 	return -1;
@@ -108,6 +127,17 @@ static void * get_ddrtr_entry(void)
 	length  = s40_ddr_training_data_end - src_ptr;
 #endif
 
+#ifdef CONFIG_DDR_TRAINING_HI3798MX
+	src_ptr = hi3798mx_ddr_training_data_start;
+	dst_ptr = (char *)(0xFFFF0C00);
+	length  = hi3798mx_ddr_training_data_end - src_ptr;
+#endif
+
+#ifdef CONFIG_DDR_TRAINING_S5
+	src_ptr = s5_ddr_training_data_start;
+	dst_ptr = (char *)(0xFFFF0C00);
+	length  = s5_ddr_training_data_end - src_ptr;
+#endif
 	if (!src_ptr || !length) {
 		printf("DDR training is unsupport.\n");
 		return NULL;
@@ -122,7 +152,7 @@ static char *dump_ddrtr_result(struct ddrtr_result_t *result, char flags)
 {
 	int ix;
 	char *ptr;
-	static char buf[(DDR_TRAINING_MAX_VALUE + 1) * 22] = {0};
+	static char buf[(DDR_TRAINING_MAX_VALUE + 1) * 25] = {0};
 
 	ptr = buf;
 	buf[0] = '\0';
@@ -273,7 +303,12 @@ static int ddrt_pressure(int argc, char *argv[])
 	if (argc > 5)
 		change_bit = simple_strtoull(argv[5], &endp,0);
 
-	entry = (ddrtr_t)get_ddrtr_entry();
+	entry = (ddrtr_t)get_ddrtr_entry();	
+	if (!entry)
+		return -1;
+
+	printf ("## DDR training entry: 0x%08X\n ", (unsigned int)entry);
+
 	asm("mcr p15, 0, r0, c7, c5, 0");
 	asm("mcr p15, 0, r0, c7, c10, 4");
 

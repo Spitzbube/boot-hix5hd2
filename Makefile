@@ -541,7 +541,13 @@ s40_config: unconfig
 	@echo "CFG_REG_END    = 8768"  >> platform.mk
 	@$(MKCONFIG) $(@:_config=) arm s40 s40
 
-TARGETS := godbox s40
+s5_config: unconfig
+	@echo "CFG_REG_START  = 64"   > platform.mk
+	@echo "CFG_REG_LENGTH = 9616"  >> platform.mk
+	@echo "CFG_REG_END    = 9680"  >> platform.mk
+	@$(MKCONFIG) $(@:_config=) arm s5 s5
+
+TARGETS := godbox s40 s5
 #########################################################################
 
 .PHONY: mini-boot.clean

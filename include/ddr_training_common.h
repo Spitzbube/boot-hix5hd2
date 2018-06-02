@@ -14,7 +14,7 @@
 #define DDR_TRAINING_STAT_BITS_WAIT	(1)
 #define DDR_TRAINING_STAT_BITS_WS	(2)
 #define DDR_TRAINING_STAT_BITS_RS	(3)
-
+#define DDR_TRAINING_STAT_BITS_DES	(4)
 struct regval_t {
 	unsigned int reg;
 	unsigned int val;
@@ -22,9 +22,9 @@ struct regval_t {
 
 struct ddrtr_result_t {
 	unsigned int count;
-#define DDR_TRAINING_MAX_VALUE       20
-	struct regval_t reg[20];
-	char data[1024];
+#define DDR_TRAINING_MAX_VALUE 2*4*6
+	struct regval_t reg[DDR_TRAINING_MAX_VALUE];
+	char data[2*1024];
 };
 
 struct ddrtr_param_t {

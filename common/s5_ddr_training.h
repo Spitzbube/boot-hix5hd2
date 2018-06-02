@@ -1,0 +1,1 @@
+../arch/arm/cpu/s5/ddr_dataeye_training.h
