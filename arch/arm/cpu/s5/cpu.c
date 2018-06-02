@@ -113,6 +113,7 @@ struct cpu_info_t cpu_info[] = {
 		.boot_media = NULL,
 		.get_clock  = NULL,
 		.get_cpu_version = NULL,
+		.compatible = NULL,
 	},
 	//TODO: XXX
 	{
@@ -124,6 +125,7 @@ struct cpu_info_t cpu_info[] = {
 		.boot_media = hi3798cv100_boot_media,
 		.get_clock  = get_hi3798cv100_clock,
 		.get_cpu_version = NULL,
+		.compatible = "hisilicon,Hi3798Cv100A",
 	},
 	{
 		.name   = "Hi3798Cv100",
@@ -134,6 +136,7 @@ struct cpu_info_t cpu_info[] = {
 		.boot_media = hi3798cv100_boot_media,
 		.get_clock  = get_hi3798cv100_clock,
 		.get_cpu_version = NULL,
+		.compatible = "hisilicon,Hi3798Cv100",
 	},
 	{
 		.name   = "Hi3796Cv100",
@@ -144,6 +147,7 @@ struct cpu_info_t cpu_info[] = {
 		.boot_media = hi3798cv100_boot_media,
 		.get_clock  = get_hi3798cv100_clock,
 		.get_cpu_version = NULL,
+		.compatible = "hisilicon,Hi3796Cv100",
 	},
 	{0},
 };

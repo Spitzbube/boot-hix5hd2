@@ -5,6 +5,9 @@
 #include <asm/sizes.h>
 #include <asm/arch/platform.h>
 #include <version.h>
+#include <libfdt.h>
+#include <malloc.h>
+#include <asm/cpu_info.h>
 
 extern void eth_config_init(void);
 
@@ -50,10 +53,39 @@ int board_init (void)
 
 int misc_init_r (void)
 {
+	const char *compatible;
+	char *fdt;
+	DECLARE_GLOBAL_DATA_PTR;
+	int ret;
+
 #ifdef CONFIG_RANDOM_ETHADDR
 	random_init_r();
 #endif
+
 	eth_config_init();
+
+	compatible = get_cpuinfo()->compatible;
+	if (!compatible) {
+		/* TODO: use a default compatible string? */
+		return 0;
+	}
+
+	fdt = malloc(SZ_1K);
+	if (!fdt) {
+		printf("Error: malloc fdt failed!\n");
+		return 0;
+	}
+
+	/* here we create a temp fdt which only include a compatible info */
+	ret = fdt_create_empty_tree(fdt, SZ_1K);
+	if (ret)
+		printf("Error: create fdt(ret=%x)\n", ret);
+
+	do_fixup_by_path_string(fdt, "/", "compatible", compatible);
+
+	gd->fdt_blob = fdt;
+	printf("fdt_blob = 0x%p\n", fdt);
+
 	return (0);
 }
 
@@ -85,3 +117,42 @@ int dram_init (void)
 	display_info();
 	return 0;
 }
+
+#ifdef CONFIG_OF_BOARD_SETUP
+void ft_board_setup(void *fdt, bd_t *bd)
+{
+	char *version = CONFIG_SDKVERSION;
+	int nodeoffset, err;
+	extern unsigned int _blank_zone_start;
+	extern unsigned int _blank_zone_end;
+	int length = _blank_zone_end - _blank_zone_start;
+
+	nodeoffset = fdt_path_offset (fdt, "/tags");
+	/*
+	 * If there is no "tags" node in the blob, create it.
+	 */
+	if (nodeoffset < 0) {
+		/*
+		 * Create a new node "/tags" (offset 0 is root level)
+		 */
+		nodeoffset = fdt_add_subnode(fdt, 0, "tags");
+		if (nodeoffset < 0) {
+			printf("WARNING: could not create /tags %s.\n",
+				fdt_strerror(nodeoffset));
+			return;
+		}
+	}
+
+	err = fdt_setprop(fdt, nodeoffset,
+			"sdkversion", version, strlen(version)+1);
+	if (err < 0)
+		printf("WARNING: could not set sdkversion %s.\n",
+				fdt_strerror(err));
+
+	err = fdt_setprop(fdt, nodeoffset,
+			"bootreg", (void *)_blank_zone_start, length);
+	if (err < 0)
+		printf("WARNING: could not set bootreg %s.\n",
+				fdt_strerror(err));
+}
+#endif

@@ -119,6 +119,18 @@
 #define CONFIG_BOOTM_LINUX 1    //for bootm
 #define CONFIG_SYS_LOAD_ADDR (CFG_DDR_PHYS_OFFSET + 0x08000)   /* default load address 0x80008000*/
 #define CONFIG_ZERO_BOOTDELAY_CHECK 1   /*use ^c to interrupt*/
+#define CONFIG_CMD_BOOTZ
+#define CONFIG_LMB
+//#define DEBUG
+
+/* pass open firmware flat tree */
+#define CONFIG_OF_LIBFDT	1
+#define CONFIG_OF_BOARD_SETUP	1
+
+/* new uImage format support */
+#define CONFIG_FIT		1
+#define CONFIG_FIT_VERBOSE	1 /* enable fit_format_{error,warning}() */
+#define CONFIG_FIT_BEST_MATCH	1
 
 /*-----------------------------------------------------------------------
  * for  commond configure
